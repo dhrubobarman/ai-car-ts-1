@@ -1,4 +1,4 @@
-import type { InfoPoint, PointDrawOptions, TPoint } from "@/types";
+import type { TPoint, PointDrawOptions } from "@/types";
 
 class Point {
   x: number;
@@ -7,7 +7,7 @@ class Point {
     this.x = x;
     this.y = y;
   }
-  static load(info: InfoPoint) {
+  static load(info: TPoint) {
     return new Point(info.x, info.y);
   }
 
