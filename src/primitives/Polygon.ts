@@ -20,7 +20,7 @@ class Polygon {
 
   static union(polys: Polygon[]) {
     Polygon.multiBreak(polys);
-    const keptSegments = [];
+    const kepTPoints = [];
     for (let i = 0; i < polys.length; i++) {
       for (const seg of polys[i].segments) {
         let keep = true;
@@ -33,11 +33,11 @@ class Polygon {
           }
         }
         if (keep) {
-          keptSegments.push(seg);
+          kepTPoints.push(seg);
         }
       }
     }
-    return keptSegments;
+    return kepTPoints;
   }
   static multiBreak(polys: Polygon[]) {
     for (let i = 0; i < polys.length - 1; i++) {
