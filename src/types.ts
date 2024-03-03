@@ -65,3 +65,6 @@ export type InfoSegment = {
 
 export type InfoImage = {};
 // --------------TYPE FOR LOADING LOCALSTORAGE DATA--------------
+
+// new Type
+export type ControlType = "KEYS" | "DUMMY";

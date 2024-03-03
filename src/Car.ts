@@ -1,7 +1,7 @@
 import { Controls } from "./Controls";
 import { Sensor } from "./Sensor";
 import { polygonIntersect } from "./math/utils";
-import { TPoint } from "./types";
+import { ControlType, TPoint } from "./types";
 
 export class Car {
   x: number;
@@ -14,10 +14,17 @@ export class Car {
   maxSpeed: number;
   friction: number;
   angle: number;
-  sensor: Sensor;
+  sensor: Sensor | undefined;
   polygon: TPoint[];
   damaged: boolean;
-  constructor(x: number, y: number, width: number, height: number) {
+  constructor(
+    x: number,
+    y: number,
+    width: number,
+    height: number,
+    controlType: ControlType,
+    maxSpeed = 3
+  ) {
     this.x = x;
     this.y = y;
     this.width = width;
@@ -25,14 +32,16 @@ export class Car {
     this.polygon = [];
     this.speed = 0;
     this.acceleration = 0.2;
-    this.maxSpeed = 3;
+    this.maxSpeed = maxSpeed;
     this.friction = 0.05;
     this.angle = 0;
 
     this.damaged = false;
 
-    this.controls = new Controls();
-    this.sensor = new Sensor(this);
+    this.controls = new Controls(controlType);
+    if (controlType !== "DUMMY") {
+      this.sensor = new Sensor(this);
+    }
   }
   private move() {
     if (this.controls.forward) {
@@ -92,27 +101,34 @@ export class Car {
     });
     return points;
   }
-  private assesDamage(roadBorders: TPoint[][]) {
+  private assesDamage(roadBorders: TPoint[][], traffic: Car[] = []) {
     for (let i = 0; i < roadBorders.length; i++) {
       if (polygonIntersect(this.polygon, roadBorders[i])) {
         return true;
       }
     }
+    for (let i = 0; i < traffic.length; i++) {
+      if (polygonIntersect(this.polygon, traffic[i].polygon)) {
+        return true;
+      }
+    }
     return false;
   }
-  update(roadBorders: TPoint[][]) {
+  update(roadBorders: TPoint[][], traffic: Car[] = []) {
     if (!this.damaged) {
       this.move();
       this.polygon = this.createPolygon();
-      this.damaged = this.assesDamage(roadBorders);
+      this.damaged = this.assesDamage(roadBorders, traffic);
     }
-    this.sensor.update(roadBorders);
+    if (this.sensor) {
+      this.sensor.update(roadBorders, traffic);
+    }
   }
-  draw(ctx: CanvasRenderingContext2D) {
+  draw(ctx: CanvasRenderingContext2D, color = "black") {
     if (this.damaged) {
-      ctx.fillStyle = "red";
+      ctx.fillStyle = "gray";
     } else {
-      ctx.fillStyle = "black";
+      ctx.fillStyle = color;
     }
     ctx.beginPath();
     ctx.moveTo(this.polygon[0].x, this.polygon[0].y);
@@ -120,6 +136,8 @@ export class Car {
       ctx.lineTo(this.polygon[i].x, this.polygon[i].y);
     }
     ctx.fill();
-    this.sensor.draw(ctx);
+    if (this.sensor) {
+      this.sensor.draw(ctx);
+    }
   }
 }
