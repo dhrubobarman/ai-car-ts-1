@@ -108,6 +108,9 @@ export function lerp2D(a: Point, b: Point, t: number) {
 // if you're following along, this comes in a few minutes ;-)
 export function getRandomColor() {
   const hue = 290 + Math.random() * 260;
+  const s = getRndInteger(30, 100);
+  const l = getRndInteger(25, 100);
+  return `hsl(${hue},${s}%,${l}%)`;
   return "hsl(" + hue + ", 100%, 60%)";
 }
 
@@ -142,4 +145,16 @@ export function polygonIntersect(
 
 export function numberToBool(num: number) {
   return num === 1;
+}
+export function getRGBA(values: number) {
+  const alpha = Math.abs(values);
+  const r = values < 0 ? 0 : 255;
+  const g = r;
+  const b = values > 0 ? 0 : 255;
+
+  return `rgba(${r},${g},${b},${alpha})`;
+}
+
+export function getRndInteger(min: number, max: number) {
+  return Math.floor(Math.random() * (max - min)) + min;
 }
