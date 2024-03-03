@@ -18,7 +18,7 @@ const iconButtonStyle =
 export const saveButton = createElement(
   "button",
   {
-    className: `bg-gray-900 text-white ${iconButtonStyle}`,
+    className: `bg-gray-900 text-white ${iconButtonStyle} hidden`,
     innerText: "💾",
   },
   controls
