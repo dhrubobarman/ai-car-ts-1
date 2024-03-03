@@ -11,6 +11,10 @@ export type PolygonDrawOptions = { width?: number } & Partial<CTXAttributes>;
 export type EnvelopeDrawOptions = Partial<CTXAttributes>;
 
 export type TPoint = { x: number; y: number };
+export type InterSection =
+  | { x: number; y: number; offset: number }
+  | null
+  | undefined;
 
 export type GraphInfo = {
   points: TPoint[];

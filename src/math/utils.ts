@@ -1,5 +1,6 @@
 import Point from "@/primitives/point";
 import Segment from "@/primitives/segment";
+import { TPoint } from "@/types";
 
 export function getNearestPoint(
   loc: Point,
@@ -17,7 +18,7 @@ export function getNearestPoint(
   }
   return nearest;
 }
-export function getNearestSegment(
+export function getNearesTPoint(
   loc: Point,
   segments: Segment[],
   threshold = Number.MAX_SAFE_INTEGER
@@ -72,7 +73,12 @@ export function angle(p: Point) {
   return Math.atan2(p.y, p.x);
 }
 
-export function getIntersection(A: Point, B: Point, C: Point, D: Point) {
+export function getIntersection(
+  A: Point | TPoint,
+  B: Point | TPoint,
+  C: Point | TPoint,
+  D: Point | TPoint
+) {
   const tTop = (D.x - C.x) * (A.y - C.y) - (D.y - C.y) * (A.x - C.x);
   const uTop = (C.y - A.y) * (A.x - B.x) - (C.x - A.x) * (A.y - B.y);
   const bottom = (D.y - C.y) * (B.x - A.x) - (D.x - C.x) * (B.y - A.y);
@@ -110,4 +116,26 @@ export function getFake3dPoint(point: Point, viewpoint: Point, height: number) {
   const dist = distance(point, viewpoint);
   const scaler = Math.atan(dist / 300) / (Math.PI / 2);
   return add(point, scale(dir, height * scaler));
+}
+
+// new functions ---------------------------
+
+export function polygonIntersect(
+  poly1: TPoint[] | Point[],
+  poly2: TPoint[] | Point[]
+) {
+  for (let i = 0; i < poly1.length; i++) {
+    for (let j = 0; j < poly2.length; j++) {
+      const touch = getIntersection(
+        poly1[i],
+        poly1[(i + 1) % poly1.length],
+        poly2[j],
+        poly2[(j + 1) % poly2.length]
+      );
+      if (touch) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
