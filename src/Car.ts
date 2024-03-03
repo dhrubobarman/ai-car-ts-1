@@ -1,6 +1,7 @@
 import { Controls } from "./Controls";
+import { NeuralNetwork } from "./Network";
 import { Sensor } from "./Sensor";
-import { polygonIntersect } from "./math/utils";
+import { numberToBool, polygonIntersect } from "./math/utils";
 import { ControlType, TPoint } from "./types";
 
 export class Car {
@@ -17,6 +18,8 @@ export class Car {
   sensor: Sensor | undefined;
   polygon: TPoint[];
   damaged: boolean;
+  brain: NeuralNetwork | undefined;
+  useBrain: boolean;
   constructor(
     x: number,
     y: number,
@@ -35,12 +38,15 @@ export class Car {
     this.maxSpeed = maxSpeed;
     this.friction = 0.05;
     this.angle = 0;
+    this.useBrain = controlType === "AI";
 
     this.damaged = false;
 
     this.controls = new Controls(controlType);
+
     if (controlType !== "DUMMY") {
       this.sensor = new Sensor(this);
+      this.brain = new NeuralNetwork([this.sensor.rayCount, 8, 4]);
     }
   }
   private move() {
@@ -114,6 +120,7 @@ export class Car {
     }
     return false;
   }
+
   update(roadBorders: TPoint[][], traffic: Car[] = []) {
     if (!this.damaged) {
       this.move();
@@ -122,6 +129,18 @@ export class Car {
     }
     if (this.sensor) {
       this.sensor.update(roadBorders, traffic);
+    }
+    if (this.brain && this.sensor) {
+      const offsets = this.sensor.readings.map((s) =>
+        s === null || s === undefined ? 0 : 1 - s.offset
+      );
+      const outputs = NeuralNetwork.feedForward(offsets, this.brain);
+      if (this.useBrain) {
+        this.controls.forward = numberToBool(outputs[0]);
+        this.controls.left = numberToBool(outputs[1]);
+        this.controls.right = numberToBool(outputs[2]);
+        this.controls.reverse = numberToBool(outputs[3]);
+      }
     }
   }
   draw(ctx: CanvasRenderingContext2D, color = "black") {

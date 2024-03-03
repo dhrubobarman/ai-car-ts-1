@@ -139,3 +139,7 @@ export function polygonIntersect(
   }
   return false;
 }
+
+export function numberToBool(num: number) {
+  return num === 1;
+}
