@@ -67,4 +67,4 @@ export type InfoImage = {};
 // --------------TYPE FOR LOADING LOCALSTORAGE DATA--------------
 
 // new Type
-export type ControlType = "KEYS" | "DUMMY";
+export type ControlType = "KEYS" | "DUMMY" | "AI";
